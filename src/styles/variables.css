@@ -1,0 +1,33 @@
+:root {
+  color-scheme: dark;
+
+  /* Backgrounds */
+  --background:      #0F1115;
+  --background-deep: #0c0e12;
+  --surface:         #171A21;
+  --surface-low:     #1a1c20;
+  --surface-high:    #282a2e;
+  --surface-higher:  #333539;
+
+  /* Text */
+  --text:       #F8FAFC;
+  --text-muted: #94A3B8;
+  --text-dim:   #607060;
+
+  /* Borders */
+  --outline:        rgba(255, 255, 255, 0.08);
+  --outline-strong: #3d4a3d;
+
+  /* Brand accent — green ONLY for CTAs and active states */
+  --primary:       #22C55E;
+  --primary-deep:  #16a34a;
+  --primary-light: #4ADE80;
+  --primary-text:  #001a0a;
+
+  /* Layout */
+  --container:   min(1280px, calc(100vw - 48px));
+  --section-gap: 80px;
+
+  /* Motion */
+  --ease: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
