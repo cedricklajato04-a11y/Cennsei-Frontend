@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Journey | Cennsei</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono&family=Geist:wght@400;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      background-color: #0F1115;
+      color: #e2e2e8;
+      overflow-x: hidden;
+    }
+    .glass-card {
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: transform 0.4s cubic-bezier(0.2,0,0.2,1), border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+    .glass-card:hover {
+      transform: scale(1.01);
+      border-color: rgba(34,197,94,0.4);
+      box-shadow: 0 10px 30px -10px rgba(34,197,94,0.15);
+    }
+    .glow-green { box-shadow: 0 0 15px rgba(34,197,94,0.25); }
+    .pulse-node { animation: pulse-ring 2.5s cubic-bezier(0.455,0.03,0.515,0.955) infinite; }
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0   rgba(34,197,94,0.4); }
+      70%  { box-shadow: 0 0 0 10px rgba(34,197,94,0);   }
+      100% { box-shadow: 0 0 0 0   rgba(34,197,94,0);   }
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s cubic-bezier(0.2,0,0.2,1), transform 0.7s cubic-bezier(0.2,0,0.2,1);
+    }
+    .reveal.active { opacity:1; transform:translateY(0); }
+    .progress-bar-fill { width:0% !important; transition: width 1.4s cubic-bezier(0.4,0,0.2,1); }
+    .progress-bar-fill.animated { width: var(--target-width) !important; }
+    .atmo-glow {
+      background: radial-gradient(circle at center, rgba(34,197,94,0.07) 0%, transparent 70%);
+      animation: drift 15s ease-in-out infinite alternate;
+    }
+    @keyframes drift {
+      from { transform: translate(-8%,-8%) scale(1); }
+      to   { transform: translate(8%,8%) scale(1.08); }
+    }
+
+    /* ── Timeline layout ── */
+    .timeline-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    /* The spine sits absolutely and only covers the flex container height */
+    .timeline-spine {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: rgba(255,255,255,0.06);
+      transform: translateX(-50%);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .timeline-spine-fill {
+      width: 100%;
+      height: 0%;
+      background: linear-gradient(to bottom, #22c55e, #4be277);
+      transition: height 0.12s linear;
+      border-radius: 999px;
+    }
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 1fr 56px 1fr;
+      align-items: center;
+      gap: 0 0;
+    }
+    .timeline-row .card-left  { grid-column:1; padding-right:20px; text-align:right; }
+    .timeline-row .card-right { grid-column:3; padding-left:20px;  text-align:left;  }
+    .timeline-row .node-col   { grid-column:2; display:flex; justify-content:center; align-items:center; }
+    .timeline-row .year-ghost { font-size: clamp(2rem,5vw,3.5rem); font-weight:900; color:rgba(34,197,94,0.06); user-select:none; pointer-events:none; line-height:1; }
+
+    @media (max-width: 768px) {
+      .timeline-row { grid-template-columns: 36px 1fr; }
+      .timeline-row .card-left  { grid-column:2; padding-right:0; padding-left:14px; text-align:left; }
+      .timeline-row .card-right { grid-column:2; padding-left:14px; }
+      .timeline-row .node-col   { grid-column:1; }
+      .timeline-row .year-ghost { display:none; }
+      .timeline-spine { left:18px; }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      .reveal,.glass-card,.progress-bar-fill,.atmo-glow,.pulse-node,.timeline-spine-fill {
+        animation:none!important; transition:none!important; transform:none!important; opacity:1!important;
+      }
+      .progress-bar-fill   { width:var(--target-width)!important; }
+      .timeline-spine-fill { height:100%!important; }
+    }
+  </style>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode:"class",
+      theme:{ extend:{
+        colors:{
+          "primary":"#4be277","on-primary":"#003915","primary-container":"#22c55e",
+          "secondary":"#4de082","on-secondary":"#003919","secondary-container":"#00b55d",
+          "background":"#111317","surface":"#111317","surface-variant":"#333539",
+          "surface-container":"#1e2024","surface-container-low":"#1a1c20",
+          "surface-container-high":"#282a2e","surface-container-highest":"#333539",
+          "surface-container-lowest":"#0c0e12","surface-bright":"#37393e",
+          "on-surface":"#e2e2e8","on-surface-variant":"#bccbb9",
+          "outline":"#869585","outline-variant":"#3d4a3d",
+          "inverse-surface":"#e2e2e8","inverse-on-surface":"#2f3035",
+          "error":"#ffb4ab","on-error":"#690005","error-container":"#93000a",
+          "tertiary":"#c5c6d0","on-tertiary":"#2d3038","surface-tint":"#4ae176",
+        },
+        fontFamily:{
+          "code":["JetBrains Mono"],"display":["Inter"],"headline-lg":["Inter"],
+          "headline-md":["Inter"],"label-caps":["Geist"],"body-md":["Inter"],"body-lg":["Inter"],
+        },
+        fontSize:{
+          "code":  ["13px",{lineHeight:"1.5",fontWeight:"400"}],
+          "display":["64px",{lineHeight:"1.05",letterSpacing:"-0.04em",fontWeight:"800"}],
+          "headline-lg":["44px",{lineHeight:"1.1",letterSpacing:"-0.03em",fontWeight:"800"}],
+          "headline-md":["28px",{lineHeight:"1.2",fontWeight:"700"}],
+          "label-caps":["11px",{lineHeight:"1.2",letterSpacing:"0.1em",fontWeight:"600"}],
+          "headline-lg-mobile":["32px",{lineHeight:"1.2",fontWeight:"800"}],
+          "body-md":["15px",{lineHeight:"1.65",fontWeight:"400"}],
+          "body-lg":["17px",{lineHeight:"1.65",fontWeight:"400"}],
+        },
+        spacing:{
+          "max-width":"1280px","grid-gap":"20px","container-padding":"24px",
+          "stack-sm":"6px","stack-md":"14px","stack-lg":"28px",
+        },
+        borderRadius:{ DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px" },
+      }}
+    }
+  </script>
+</head>
+<body class="font-body-md text-body-md">
+
+<!-- Nav -->
+<nav class="fixed top-0 w-full z-50 transition-all duration-500 border-b border-transparent" id="main-nav">
+  <div class="flex justify-between items-center px-container-padding max-w-max-width mx-auto h-14">
+    <span class="font-headline-md text-headline-md font-bold text-primary">Cennsei</span>
+    <div class="hidden md:flex items-center gap-stack-lg text-sm">
+      <a class="text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Home</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">About</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Expertise</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Projects</a>
+      <a class="text-primary font-bold border-b border-primary pb-0.5" href="#">Journey</a>
+    </div>
+    <a class="bg-primary-container text-on-primary px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider hover:brightness-110 transition-all duration-300" href="#">Contact Me</a>
+  </div>
+</nav>
+
+<main class="pt-16 pb-12 overflow-hidden">
+
+  <!-- Hero -->
+  <header class="px-container-padding max-w-max-width mx-auto mb-10 text-center relative">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[300px] atmo-glow rounded-full blur-[80px] -z-10 pointer-events-none"></div>
+    <p class="font-label-caps text-label-caps text-primary tracking-widest uppercase mb-2 reveal">Evolution &amp; Growth</p>
+    <h1 class="font-display text-display md:text-display text-headline-lg-mobile mb-3 reveal">The Journey</h1>
+    <p class="text-body-lg text-on-surface-variant max-w-xl mx-auto reveal">
+      Tracing the trajectory from lines of code to complex system architectures —
+      a chronicle of technical evolution and professional milestones.
+    </p>
+  </header>
+
+  <!-- Timeline -->
+  <section class="px-container-padding max-w-max-width mx-auto mb-10" id="timeline-section">
+    <div class="timeline-wrap" id="timeline-wrap">
+      <div class="timeline-spine" id="timeline-spine">
+        <div class="timeline-spine-fill" id="timeline-fill"></div>
+      </div>
+
+      <!-- 2023 -->
+      <div class="timeline-row reveal">
+        <div class="card-left">
+          <div class="glass-card p-5 rounded-xl">
+            <span class="font-code text-primary text-xs mb-1 block">Q1 – Q4 2023</span>
+            <h3 class="font-headline-md text-headline-md mb-2">The Foundation</h3>
+            <p class="text-on-surface-variant text-sm mb-3">Laying the groundwork in algorithmic thinking and systems programming. Mastering fundamental computing through rigorous low-level engineering.</p>
+            <div class="flex flex-wrap gap-1.5 justify-end">
+              <span class="bg-surface-container-high px-2.5 py-0.5 rounded text-xs font-code border border-outline-variant/20">C++</span>
+              <span class="bg-surface-container-high px-2.5 py-0.5 rounded text-xs font-code border border-outline-variant/20">Systems</span>
+              <span class="bg-surface-container-high px-2.5 py-0.5 rounded text-xs font-code border border-outline-variant/20">Algorithms</span>
+            </div>
+          </div>
+        </div>
+        <div class="node-col">
+          <div class="w-10 h-10 bg-background border-2 border-primary rounded-full flex items-center justify-center z-10 glow-green pulse-node shrink-0">
+            <span class="material-symbols-outlined text-primary text-base">terminal</span>
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="year-ghost">2023</span>
+        </div>
+      </div>
+
+      <!-- 2024 -->
+      <div class="timeline-row reveal">
+        <div class="card-left">
+          <span class="year-ghost">2024</span>
+        </div>
+        <div class="node-col">
+          <div class="w-10 h-10 bg-background border-2 border-primary rounded-full flex items-center justify-center z-10 glow-green pulse-node shrink-0">
+            <span class="material-symbols-outlined text-primary text-base">database</span>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="glass-card p-5 rounded-xl">
+            <span class="font-code text-primary text-xs mb-1 block">Q1 – Q4 2024</span>
+            <h3 class="font-headline-md text-headline-md mb-2">Scalability &amp; Mastery</h3>
+            <p class="text-on-surface-variant text-sm mb-3">Exploration of distributed systems and scalable backend architectures. Engineered high-throughput APIs and managed complex database schemas.</p>
+            <ul class="space-y-1.5">
+              <li class="flex items-center gap-2 text-xs text-on-surface-variant">
+                <span class="material-symbols-outlined text-primary" style="font-size:16px">check_circle</span>
+                Published 3 open-source libraries for state management.
+              </li>
+              <li class="flex items-center gap-2 text-xs text-on-surface-variant">
+                <span class="material-symbols-outlined text-primary" style="font-size:16px">check_circle</span>
+                Optimized SQL queries reducing latency by 45%.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2025 -->
+      <div class="timeline-row reveal">
+        <div class="card-left">
+          <div class="glass-card p-5 rounded-xl">
+            <span class="font-code text-primary text-xs mb-1 block">Q1 – Q4 2025</span>
+            <h3 class="font-headline-md text-headline-md mb-2">AI Integration</h3>
+            <p class="text-on-surface-variant text-sm mb-3">Transitioning to production-grade AI integration. Building intelligent systems bridging heavy data and intuitive human experiences.</p>
+            <img alt="Processor visualization"
+              class="w-full h-32 object-cover rounded-lg mb-3 border border-outline-variant/20"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbCw-ewgvgJbQ2aTr2KPnhz_85EE9c4nv7M8Dezf2YWpBdkgHOgJJmWT5ZSa03sKnxF06qGJYgreYVbgyD_3oOWBIo8oQvQfPNLYb0F8MHbz_cL5ezZNw-JqNpz8kWeVgCTYWH9fUBf3ct9Iurkl9dG7iQ0vCrEXmKmWR164659Xd0jhFGMGdxJlZmSEpmE175JIkbgupieMtMMV0Y06t5guuPDwsFSn6cOZLrvVedvirqQOw10B6SGw188QMhWuH-wtI_YOKPgXrE"/>
+            <div class="flex flex-wrap gap-1.5 justify-end">
+              <span class="bg-surface-container-high px-2.5 py-0.5 rounded text-xs font-code border border-outline-variant/20">Kubernetes</span>
+              <span class="bg-surface-container-high px-2.5 py-0.5 rounded text-xs font-code border border-outline-variant/20">LLM Ops</span>
+              <span class="bg-surface-container-high px-2.5 py-0.5 rounded text-xs font-code border border-outline-variant/20">Next.js</span>
+            </div>
+          </div>
+        </div>
+        <div class="node-col">
+          <div class="w-10 h-10 bg-background border-2 border-primary rounded-full flex items-center justify-center z-10 glow-green pulse-node shrink-0">
+            <span class="material-symbols-outlined text-primary text-base">rocket_launch</span>
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="year-ghost">2025</span>
+        </div>
+      </div>
+
+      <!-- 2026 -->
+      <div class="timeline-row reveal">
+        <div class="card-left">
+          <span class="year-ghost">2026</span>
+        </div>
+        <div class="node-col">
+          <div class="w-10 h-10 bg-background border-2 border-primary rounded-full flex items-center justify-center z-10 glow-green pulse-node shrink-0">
+            <span class="material-symbols-outlined text-primary text-base">architecture</span>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="glass-card p-5 rounded-xl">
+            <span class="font-code text-primary text-xs mb-1 block">Present &amp; Future</span>
+            <h3 class="font-headline-md text-headline-md mb-2">Technical Leadership</h3>
+            <p class="text-on-surface-variant text-sm mb-3">Scaling impact through technical leadership and high-level system design. Architecting sustainable, global-scale platforms.</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/10">
+                <div class="text-primary font-bold text-2xl leading-none">100%</div>
+                <div class="text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">Uptime Goal</div>
+              </div>
+              <div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/10">
+                <div class="text-primary font-bold text-2xl leading-none">50+</div>
+                <div class="text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">Global Deployments</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /timeline-wrap -->
+  </section>
+
+  <!-- Growth Grid -->
+  <section class="px-container-padding max-w-max-width mx-auto mb-10">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+      <!-- Lessons Learned -->
+      <div class="reveal glass-card p-6 rounded-2xl relative overflow-hidden group">
+        <div class="absolute top-0 right-0 p-5 opacity-[0.07] group-hover:opacity-[0.13] transition-opacity duration-500 pointer-events-none">
+          <span class="material-symbols-outlined" style="font-size:90px">psychology</span>
+        </div>
+        <h2 class="font-headline-md text-headline-md mb-4 flex items-center gap-3">
+          <span class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-primary text-base">history_edu</span>
+          </span>
+          Lessons Learned
+        </h2>
+        <div class="space-y-4">
+          <div class="pl-5 border-l-2 border-primary/40">
+            <h4 class="font-bold text-sm text-on-surface mb-0.5">Simplicity is Scalability</h4>
+            <p class="text-on-surface-variant text-xs leading-relaxed">Complex problems don't always need complex solutions. The most robust systems are often the most elegant ones.</p>
+          </div>
+          <div class="pl-5 border-l-2 border-primary/40">
+            <h4 class="font-bold text-sm text-on-surface mb-0.5">Testing is Communication</h4>
+            <p class="text-on-surface-variant text-xs leading-relaxed">Tests are documentation for future engineers. They describe intent better than any README ever could.</p>
+          </div>
+          <div class="pl-5 border-l-2 border-primary/40">
+            <h4 class="font-bold text-sm text-on-surface mb-0.5">User First, Code Second</h4>
+            <p class="text-on-surface-variant text-xs leading-relaxed">Beautiful code is worthless if it doesn't solve the core user pain point. Design for empathy.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Future Goals -->
+      <div class="reveal glass-card p-6 rounded-2xl relative overflow-hidden group">
+        <div class="absolute top-0 right-0 p-5 opacity-[0.07] group-hover:opacity-[0.13] transition-opacity duration-500 pointer-events-none">
+          <span class="material-symbols-outlined" style="font-size:90px">near_me</span>
+        </div>
+        <h2 class="font-headline-md text-headline-md mb-4 flex items-center gap-3">
+          <span class="w-8 h-8 rounded-lg bg-secondary/20 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-secondary text-base">track_changes</span>
+          </span>
+          Future Goals
+        </h2>
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="font-bold text-on-surface">Decentralized Systems Mastery</span>
+              <span class="text-secondary font-bold">85%</span>
+            </div>
+            <div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+              <div class="h-full bg-secondary rounded-full progress-bar-fill" style="--target-width:85%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="font-bold text-on-surface">Open Source Stewardship</span>
+              <span class="text-secondary font-bold">60%</span>
+            </div>
+            <div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+              <div class="h-full bg-secondary rounded-full progress-bar-fill" style="--target-width:60%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="font-bold text-on-surface">AI Ethics Framework Development</span>
+              <span class="text-secondary font-bold">40%</span>
+            </div>
+            <div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+              <div class="h-full bg-secondary rounded-full progress-bar-fill" style="--target-width:40%"></div>
+            </div>
+          </div>
+          <p class="text-on-surface-variant text-xs italic border-t border-outline-variant/10 pt-3">
+            "The goal is not to be better than the other man, but your previous self." — The Engineer's Creed
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="px-container-padding max-w-max-width mx-auto reveal">
+    <div class="glass-card p-8 md:p-10 rounded-2xl text-center relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent pointer-events-none"></div>
+      <h2 class="font-headline-lg text-headline-lg md:text-headline-lg text-headline-lg-mobile mb-5 relative z-10">
+        Ready to build something <span class="text-primary">legendary?</span>
+      </h2>
+      <a class="inline-flex items-center gap-2 bg-primary text-on-primary font-bold px-7 py-3 rounded-full hover:scale-105 active:scale-95 transition-all duration-300 relative z-10 text-sm" href="#">
+        Let's Connect
+        <span class="material-symbols-outlined text-base">arrow_forward</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant/20 mt-10">
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-5 px-container-padding py-10 max-w-max-width mx-auto">
+    <div class="md:col-span-4">
+      <span class="text-xl font-extrabold text-on-surface">Cennsei</span>
+      <p class="mt-2 text-on-surface-variant text-sm max-w-xs">Engineered for Excellence. Pushing the boundaries of computer science and technical design.</p>
+    </div>
+    <div class="md:col-span-4 grid grid-cols-2 gap-6">
+      <div>
+        <h4 class="font-bold text-sm mb-3 text-on-surface">Navigation</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Home</a></li>
+          <li><a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">About</a></li>
+          <li><a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Expertise</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold text-sm mb-3 text-on-surface">Connect</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Projects</a></li>
+          <li><a class="text-secondary font-bold" href="#">Journey</a></li>
+          <li><a class="text-on-surface-variant hover:text-secondary transition-colors" href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="md:col-span-4 flex flex-col justify-between items-start md:items-end">
+      <div class="flex gap-3">
+        <a class="w-9 h-9 rounded-full border border-outline-variant/30 flex items-center justify-center hover:bg-primary/10 transition-colors" href="#">
+          <span class="material-symbols-outlined text-on-surface-variant text-base">terminal</span>
+        </a>
+        <a class="w-9 h-9 rounded-full border border-outline-variant/30 flex items-center justify-center hover:bg-primary/10 transition-colors" href="#">
+          <span class="material-symbols-outlined text-on-surface-variant text-base">group</span>
+        </a>
+      </div>
+      <p class="text-on-surface-variant text-xs mt-4 opacity-70">© 2026 Cennsei. Engineered for Excellence.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Reveal observer
+  const revealObs = new IntersectionObserver((entries, obs) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('active');
+        e.target.querySelectorAll('.progress-bar-fill').forEach(b => b.classList.add('animated'));
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+  // Timeline spine scroll fill — bounded to wrap height only
+  const fill   = document.getElementById('timeline-fill');
+  const wrap   = document.getElementById('timeline-wrap');
+  const nav    = document.getElementById('main-nav');
+
+  window.addEventListener('scroll', () => {
+    // Spine fill
+    if (fill && wrap) {
+      const r    = wrap.getBoundingClientRect();
+      const mid  = window.innerHeight / 2;
+      const pct  = Math.min(Math.max(((mid - r.top) / r.height) * 100, 0), 100);
+      fill.style.height = pct + '%';
+    }
+    // Nav blur
+    if (window.scrollY > 40) {
+      nav.classList.add('bg-surface/80','backdrop-blur-xl','border-outline-variant/30');
+      nav.classList.remove('border-transparent');
+    } else {
+      nav.classList.remove('bg-surface/80','backdrop-blur-xl','border-outline-variant/30');
+      nav.classList.add('border-transparent');
+    }
+  }, { passive: true });
+</script>
+</body>
+</html>
