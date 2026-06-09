@@ -20,12 +20,10 @@ interface ShowcaseSlide {
   skills: Array<{ name: string; icon: string; pos: CSSProperties }>;
 }
 
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
-
 const slides: ShowcaseSlide[] = [
   {
     label: "Profile",
-    src: `${BASE}/hero-showcase/profile.png`,
+    src: "/hero-showcase/profile.png",
     alt: "Cennsei — professional introduction",
     skills: [
       {
@@ -50,7 +48,7 @@ const slides: ShowcaseSlide[] = [
   },
   {
     label: "Reach",
-    src: `${BASE}/hero-showcase/reach.png`,
+    src: "/hero-showcase/reach.png",
     alt: "Cennsei — innovation and connection",
     skills: [
       {
@@ -75,7 +73,7 @@ const slides: ShowcaseSlide[] = [
   },
   {
     label: "Approval",
-    src: `${BASE}/hero-showcase/approval.png`,
+    src: "/hero-showcase/approval.png",
     alt: "Cennsei — confidence and reliability",
     skills: [
       {
@@ -100,7 +98,7 @@ const slides: ShowcaseSlide[] = [
   },
   {
     label: "Welcome",
-    src: `${BASE}/hero-showcase/welcome.png`,
+    src: "/hero-showcase/welcome.png",
     alt: "Cennsei — approachable collaboration",
     skills: [
       {
