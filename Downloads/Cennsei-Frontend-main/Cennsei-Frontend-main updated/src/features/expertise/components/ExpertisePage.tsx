@@ -1,3 +1,4 @@
+import type { CSSProperties, ReactNode } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { useRef } from "react";
 
@@ -58,7 +59,7 @@ const roadmap = [
 
 // ── Shared styles ─────────────────────────────────────────────────────────────
 
-const glassCard: React.CSSProperties = {
+const glassCard: CSSProperties = {
   background: "rgba(255,255,255,0.03)",
   backdropFilter: "blur(14px)",
   border: "1px solid rgba(255,255,255,0.08)",
@@ -79,7 +80,7 @@ function SectionLabel({ icon, label }: { icon: string; label: string }) {
   );
 }
 
-function FadeUp({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+function FadeUp({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}

@@ -1,3 +1,4 @@
+import type { CSSProperties, ReactNode } from "react";
 import { motion } from "framer-motion";
 import { aboutMetrics, foundations, vision } from "../../../shared/constants/portfolio";
 
@@ -5,7 +6,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 // ── Shared styles ─────────────────────────────────────────────────────────────
 
-const glassCard: React.CSSProperties = {
+const glassCard: CSSProperties = {
   background: "rgba(255,255,255,0.03)",
   backdropFilter: "blur(12px)",
   border: "1px solid rgba(255,255,255,0.08)",
@@ -30,7 +31,7 @@ function resolveIcon(name: string): string {
 
 // ── FadeUp ────────────────────────────────────────────────────────────────────
 
-function FadeUp({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+function FadeUp({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}

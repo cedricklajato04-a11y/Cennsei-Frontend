@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { useRef } from "react";
 import { journeyMilestones } from "../../../shared/constants/portfolio";
@@ -39,7 +40,7 @@ const goals = [
 
 // ── Shared styles ─────────────────────────────────────────────────────────────
 
-const glassCard: React.CSSProperties = {
+const glassCard: CSSProperties = {
   background: "rgba(255,255,255,0.03)",
   backdropFilter: "blur(12px)",
   border: "1px solid rgba(255,255,255,0.08)",
@@ -47,7 +48,7 @@ const glassCard: React.CSSProperties = {
   transition: "border-color 0.3s ease, box-shadow 0.3s ease",
 };
 
-const tag: React.CSSProperties = {
+const tag: CSSProperties = {
   background: "rgba(255,255,255,0.06)",
   border: "1px solid rgba(255,255,255,0.1)",
   borderRadius: "6px",
