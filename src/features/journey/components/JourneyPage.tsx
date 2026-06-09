@@ -9,7 +9,7 @@ const milestones = journeyMilestones.map((m, i) => ({
   icon: (["terminal", "database", "rocket_launch", "architecture"] as const)[i] ?? "terminal",
   visual: i === 2 ? ("chip" as const) : null,
   achievements: i === 1
-    ? ["Built Payroll Management System with Java & MySQL.", "Designed normalized database schemas for academic projects."]
+    ? ["Built Payroll Management System with C# & .NET WinForms.", "Designed normalized database schemas for academic projects."]
     : null,
   stats: i === 3
     ? [{ value: "3+", label: "Projects Built" }, { value: "2026", label: "Graduating Year" }]

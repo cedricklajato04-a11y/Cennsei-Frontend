@@ -15,14 +15,14 @@ const languages = [
 const databases = [
   { name: "PostgreSQL", icon: "storage" },
   { name: "Supabase",   icon: "cloud" },
-  { name: "Redis",      icon: "hub" },
-  { name: "GraphQL",    icon: "api" },
+  { name: "REST API",   icon: "api" },
+  { name: "GraphQL",    icon: "hub" },
   { name: "MySQL",      icon: "dns" },
 ];
 
 const tools = [
-  "Docker", "Git & GitHub", "Vercel", "AWS",
-  "Figma", "Jira", "Postman", "VS Code",
+  "Git & GitHub", "VS Code", "NetBeans IDE", "Cursor",
+  "Kiro", "Figma", "Vercel", "Docker",
 ];
 
 const competencies = [

@@ -1,11 +1,184 @@
+import { useState } from "react";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { FadeUp } from "../../../shared/animations/FadeUp";
 import { projectPrinciples, projects } from "../../../shared/constants/portfolio";
 
-const visualClasses = ["payroll-photo", "tuition-photo", "task-photo"];
+// ── Background class per project ─────────────────────────────────────────────
+const visualClasses = [
+  "payroll-photo",
+  "attendance-photo",
+  "event-photo",
+  "emergency-photo",
+];
 
+// Typed cubic-bezier tuples for Framer Motion v12
+const SPRING_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+const FAST_EASE:   [number, number, number, number] = [0.4, 0, 1, 1];
+
+// ── Animation variants ────────────────────────────────────────────────────────
+const cardVariants: Variants = {
+  collapsed: {
+    height: 300,
+    transition: { type: "spring", stiffness: 280, damping: 32, mass: 0.9 },
+  },
+  expanded: {
+    height: 480,
+    transition: { type: "spring", stiffness: 260, damping: 30, mass: 0.9 },
+  },
+};
+
+const defaultContentVariants: Variants = {
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.25, ease: SPRING_EASE },
+  },
+  hidden: {
+    opacity: 0,
+    y: 6,
+    transition: { duration: 0.18, ease: FAST_EASE },
+  },
+};
+
+const expandedContainerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.055,
+      delayChildren: 0.06,
+    },
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: 0.15 },
+  },
+};
+
+const expandedItemVariants: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.32, ease: SPRING_EASE },
+  },
+};
+
+// ── Project Card ──────────────────────────────────────────────────────────────
+interface CardProps {
+  project: typeof projects[number];
+  visualClass: string;
+  index: number;
+  isHovered: boolean;
+  anyHovered: boolean;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+}
+
+function ProjectCard({
+  project,
+  visualClass,
+  index,
+  isHovered,
+  anyHovered,
+  onMouseEnter,
+  onMouseLeave,
+}: CardProps) {
+  return (
+    <motion.article
+      className={`pgrid-card pgrid-card--motion${isHovered ? " pgrid-card--hovered" : ""}${anyHovered && !isHovered ? " pgrid-card--dimmed" : ""}`}
+      tabIndex={0}
+      aria-label={project.title}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onFocus={onMouseEnter}
+      onBlur={onMouseLeave}
+      variants={cardVariants}
+      animate={isHovered ? "expanded" : "collapsed"}
+      initial="collapsed"
+    >
+      {/* Background visual */}
+      <div className={`pgrid-bg ${visualClass}`} aria-hidden="true" />
+
+      {/* Dark gradient overlay */}
+      <div className="pgrid-gradient" aria-hidden="true" />
+
+      {/* ── Collapsed: title + short desc ── */}
+      <motion.div
+        className="pgrid-default"
+        aria-hidden={isHovered}
+        variants={defaultContentVariants}
+        animate={isHovered ? "hidden" : "visible"}
+        initial="visible"
+        style={{ pointerEvents: isHovered ? "none" : "auto" }}
+      >
+        <span className="pgrid-num">0{index + 1}</span>
+        <h3 className="pgrid-card-title">{project.title}</h3>
+        <p className="pgrid-card-desc">{project.description}</p>
+      </motion.div>
+
+      {/* ── Expanded: full project info, shown on hover ── */}
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div
+            className="pgrid-expanded pgrid-expanded--motion"
+            variants={expandedContainerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            {/* Status · Year */}
+            <motion.p className="pgrid-exp-eyebrow" variants={expandedItemVariants}>
+              {project.status.toUpperCase()} · {project.year}
+            </motion.p>
+
+            {/* Title */}
+            <motion.h3 className="pgrid-exp-title" variants={expandedItemVariants}>
+              {project.title}
+            </motion.h3>
+
+            {/* Description */}
+            <motion.p className="pgrid-exp-desc" variants={expandedItemVariants}>
+              {project.description}
+            </motion.p>
+
+            {/* Key Features */}
+            <motion.ul className="pgrid-exp-features" variants={expandedItemVariants}>
+              {project.features.map((f) => (
+                <li key={f}>{f}</li>
+              ))}
+            </motion.ul>
+
+            {/* Stack Tags */}
+            <motion.div className="pgrid-exp-tags" variants={expandedItemVariants}>
+              {project.stack.map((tag) => (
+                <span key={tag}>{tag}</span>
+              ))}
+            </motion.div>
+
+            {/* CTA */}
+            <motion.a
+              className="button button-primary pgrid-exp-cta"
+              href="#contact"
+              variants={expandedItemVariants}
+            >
+              Inquire About This Project
+            </motion.a>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.article>
+  );
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
 export function ProjectsPage() {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
   return (
     <div className="page-shell">
+
+      {/* Hero */}
       <section className="section page-hero">
         <div className="container">
           <FadeUp>
@@ -25,86 +198,24 @@ export function ProjectsPage() {
         </div>
       </section>
 
-      {/* Featured Project — Payroll */}
-      <section className="container portfolio-list">
-        <FadeUp>
-          <article className="glass-card featured-project">
-            <div className="project-photo payroll-photo" aria-hidden="true" />
-            <div className="featured-copy">
-              <p className="eyebrow">{projects[0].status} · {projects[0].year}</p>
-              <h2>{projects[0].title}</h2>
-              <p>{projects[0].description}</p>
-              <ul className="feature-list">
-                {projects[0].features.map((f) => (
-                  <li key={f}>{f}</li>
-                ))}
-              </ul>
-              <div className="tag-cloud" style={{ marginTop: "20px" }}>
-                {projects[0].stack.map((tag) => (
-                  <span key={tag}>{tag}</span>
-                ))}
-              </div>
-              <div className="action-row">
-                <a className="button button-primary" href="#contact">
-                  Inquire About This Project
-                </a>
-                {projects[0].githubUrl && (
-                  <a
-                    className="button button-secondary"
-                    href={projects[0].githubUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    GitHub
-                  </a>
-                )}
-              </div>
-            </div>
-          </article>
-        </FadeUp>
-
-        {/* Remaining Projects */}
-        <div className="project-page-grid">
-          {projects.slice(1).map((project, index) => (
-            <FadeUp key={project.slug} delay={index * 0.1}>
-              <article className="glass-card project-page-card">
-                <div
-                  className={`project-photo ${visualClasses[index + 1]}`}
-                  aria-hidden="true"
+      {/* ── 2×2 Hover-Expand Grid ────────────────────────────────────────── */}
+      <section className="section pgrid-section">
+        <div className="container">
+          <div className="pgrid-track pgrid-track--motion">
+            {projects.map((project, i) => (
+              <FadeUp key={project.slug} delay={i * 0.07} className="pgrid-fadewrap">
+                <ProjectCard
+                  project={project}
+                  visualClass={visualClasses[i]}
+                  index={i}
+                  isHovered={hoveredIndex === i}
+                  anyHovered={hoveredIndex !== null}
+                  onMouseEnter={() => setHoveredIndex(i)}
+                  onMouseLeave={() => setHoveredIndex(null)}
                 />
-                <div>
-                  <p className="eyebrow">{project.status} · {project.year}</p>
-                  <h2>{project.title}</h2>
-                  <p>{project.description}</p>
-                  <ul className="feature-list">
-                    {project.features.map((f) => (
-                      <li key={f}>{f}</li>
-                    ))}
-                  </ul>
-                  <div className="tag-cloud" style={{ marginTop: "20px" }}>
-                    {project.stack.map((tag) => (
-                      <span key={tag}>{tag}</span>
-                    ))}
-                  </div>
-                  <div className="action-row">
-                    <a className="button button-primary" href="#contact">
-                      Learn More
-                    </a>
-                    {project.githubUrl && (
-                      <a
-                        className="button button-secondary"
-                        href={project.githubUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        GitHub
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </article>
-            </FadeUp>
-          ))}
+              </FadeUp>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -144,6 +255,7 @@ export function ProjectsPage() {
           </FadeUp>
         </div>
       </section>
+
     </div>
   );
 }

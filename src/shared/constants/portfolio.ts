@@ -15,7 +15,7 @@ export const homeStats: Array<[string, string]> = [
   ["3rd Year", "BSCS Student"],
   ["3+",       "Years Learning & Building"],
   ["7+",       "Development Technologies"],
-  ["3",        "Completed Projects"],
+  ["4",        "Completed Projects"],
 ];
 
 export const currentFocus = [
@@ -33,7 +33,7 @@ export const heroTechTags = ["Java", "Python", "Flutter", "MySQL", "Supabase"];
 export const aboutMetrics: Array<[string, string, string]> = [
   ["school",   "3rd Year",     "Computer Science Major"],
   ["terminal", "7+ Techs",     "Development Stack"],
-  ["rocket",   "3+ Projects",  "Built & Deployed"],
+  ["rocket",   "4+ Projects",  "Built & Deployed"],
   ["award",    "Continuous",   "Learner Mindset"],
 ];
 
@@ -121,31 +121,42 @@ export const projects = [
     status:      "Completed",
     year:        "2024",
     description:
-      "A desktop application that automates employee record management, payroll computation, attendance tracking, and database integration for small-to-medium organizations.",
-    stack:       ["Java", "MySQL"],
+      "A Windows desktop application built with C# and .NET WinForms that automates employee record management, payroll computation, attendance tracking, and database integration for small-to-medium organizations.",
+    stack:       ["C#", ".NET WinForms", "Visual Studio Code", "MSBuild", "NuGet"],
     features:    ["Employee Records", "Payroll Computation", "Attendance Tracking", "Database Integration"],
     githubUrl:   null as string | null,
   },
   {
-    slug:        "student-tuition-fee-system",
-    title:       "Student Tuition Fee System",
+    slug:        "employee-attendance-system",
+    title:       "Employee Attendance System",
     status:      "Completed",
     year:        "2024",
     description:
-      "A student billing platform for academic institutions featuring student records, fee calculation, payment tracking, and report generation.",
-    stack:       ["Java", "Database Management"],
-    features:    ["Student Records", "Fee Calculation", "Payment Tracking", "Report Generation"],
+      "A desktop application for tracking and managing employee attendance records, time-in/time-out logging, and generating attendance reports for HR management.",
+    stack:       ["Java", "NetBeans IDE", "MySQL"],
+    features:    ["Attendance Logging", "Time-In / Time-Out", "Employee Records", "Report Generation"],
     githubUrl:   null as string | null,
   },
   {
-    slug:        "task-management-system",
-    title:       "Task Management System",
+    slug:        "student-event-registration-system",
+    title:       "Student Event Registration System",
+    status:      "Completed",
+    year:        "2024",
+    description:
+      "A desktop application that allows students to register for school events, manage event listings, track registrations, and generate event attendance reports.",
+    stack:       ["Java", "NetBeans IDE", "MySQL"],
+    features:    ["Event Listings", "Student Registration", "Registration Tracking", "Attendance Reports"],
+    githubUrl:   null as string | null,
+  },
+  {
+    slug:        "emergency-app-system",
+    title:       "Emergency App System",
     status:      "In Progress",
     year:        "2025",
     description:
-      "A cross-platform mobile productivity app for task organization, habit tracking, scheduling, and a personal productivity dashboard.",
-    stack:       ["Flutter", "Supabase"],
-    features:    ["Task Organization", "Habit Tracking", "Scheduling", "Productivity Dashboard"],
+      "A cross-platform mobile application designed to provide fast emergency response features, real-time alerts, and location-based services to help users in critical situations.",
+    stack:       ["Flutter", "Dart", "Supabase", "Visual Studio Code", "Figma"],
+    features:    ["Emergency Alerts", "Real-Time Notifications", "Location Services", "User Authentication"],
     githubUrl:   null as string | null,
   },
 ];
@@ -182,8 +193,8 @@ export const journeyMilestones = [
     period:      "2024",
     eyebrow:     "Q1 – Q4 2024",
     title:       "Software Development Focus",
-    description: "Dove deep into object-oriented programming, database design, and software engineering principles. Built the Payroll Management System and Student Tuition Fee System.",
-    tags:        ["Java", "MySQL", "OOP"],
+    description: "Dove deep into object-oriented programming, database design, and software engineering principles. Built the Payroll Management System (C# / .NET WinForms), Employee Attendance System, and Student Event Registration System.",
+    tags:        ["C#", ".NET WinForms", "Java", "MySQL"],
     side:        "right" as const,
   },
   {
@@ -191,8 +202,8 @@ export const journeyMilestones = [
     period:      "2025",
     eyebrow:     "Q1 – Q4 2025",
     title:       "Mobile & Full Stack",
-    description: "Expanded into cross-platform mobile development with Flutter and Supabase. Started building the Task Management System and exploring modern web development.",
-    tags:        ["Flutter", "Supabase", "TypeScript"],
+    description: "Expanded into cross-platform mobile development with Flutter, Dart, and Supabase. Currently building the Emergency App System and exploring modern web development.",
+    tags:        ["Flutter", "Dart", "Supabase"],
     side:        "left" as const,
   },
   {

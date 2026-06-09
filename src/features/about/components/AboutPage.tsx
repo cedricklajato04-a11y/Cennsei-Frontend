@@ -1,5 +1,4 @@
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
 import { aboutMetrics, foundations, vision } from "../../../shared/constants/portfolio";
 
 // ── Shared styles ─────────────────────────────────────────────────────────────
@@ -42,60 +41,148 @@ function FadeUp({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
   );
 }
 
-// ── Tilt portrait card ────────────────────────────────────────────────────────
+// ── Portrait ──────────────────────────────────────────────────────────────────
 
 function PortraitCard() {
-  const ref = useRef<HTMLDivElement>(null);
-  const rawX = useMotionValue(0);
-  const rawY = useMotionValue(0);
-  const rotateX = useSpring(useTransform(rawY, [-0.5, 0.5], [8, -8]), { stiffness: 180, damping: 20 });
-  const rotateY = useSpring(useTransform(rawX, [-0.5, 0.5], [-8, 8]), { stiffness: 180, damping: 20 });
-
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    const el = ref.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    rawX.set((e.clientX - r.left) / r.width - 0.5);
-    rawY.set((e.clientY - r.top) / r.height - 0.5);
-  }
-
-  function handleMouseLeave() {
-    rawX.set(0);
-    rawY.set(0);
-  }
-
   return (
-    <motion.div
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        ...glassCard,
-        aspectRatio: "4/5",
-        overflow: "hidden",
-        position: "relative",
-        cursor: "default",
-        rotateX,
-        rotateY,
-        transformStyle: "preserve-3d",
-        perspective: 1000,
-      }}
-      whileHover={{ borderColor: "rgba(75,226,119,0.5)", scale: 1.01 }}
-    >
-      <img
-        src="https://lh3.googleusercontent.com/aida-public/AB6AXuACA4qyXwGD3S7rR9nSQc0ToLxxawkqpKuXha4ZPuNu-EvCNlz5xySWToIZSJuPKdKqX8b8MNPNBVQy1gcUlqyg7VYgfBTA4gvEHIsXdx_FsWQSSoMQEmywAtZfc6zzfFVejT9Ip3RnKycXQtsVAzwhwBb5M-thBmoHMyIGpD6pKtsB_abrtV_I19gODcANlwkcXtZ9g-F0EWG32GTUfJFKCbGDXV_SDo6mmBqmTnpxos65SZZkJvJPD-AunNoEVkVWK5S8aV-U4bHD"
-        alt="Professional portrait of Cennsei"
-        style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(1)", transition: "filter 0.7s ease" }}
-        onMouseEnter={e => (e.currentTarget.style.filter = "grayscale(0)")}
-        onMouseLeave={e => (e.currentTarget.style.filter = "grayscale(1)")}
-      />
-      {/* Green accent glow */}
-      <div style={{
-        position: "absolute", bottom: 0, left: 0, right: 0, height: "40%",
-        background: "linear-gradient(to top, rgba(34,197,94,0.15), transparent)",
+    <div style={{ position: "relative", width: "100%", maxWidth: 400, marginInline: "auto" }}>
+
+      {/* Deep green radial glow behind the card */}
+      <div aria-hidden="true" style={{
+        position: "absolute",
+        inset: "-10% -15%",
+        zIndex: 0,
+        borderRadius: 999,
+        background: "radial-gradient(ellipse at 50% 60%, rgba(34,197,94,0.22) 0%, transparent 70%)",
+        filter: "blur(48px)",
+        animation: "showcase-breathe 6s ease-in-out infinite",
+      }} />
+
+      {/* Corner accent lines — top-left */}
+      <div aria-hidden="true" style={{
+        position: "absolute", top: -2, left: -2,
+        width: 48, height: 48,
+        borderTop: "2px solid #22c55e",
+        borderLeft: "2px solid #22c55e",
+        borderRadius: "12px 0 0 0",
+        zIndex: 3,
         pointerEvents: "none",
       }} />
-    </motion.div>
+      {/* Corner accent lines — bottom-right */}
+      <div aria-hidden="true" style={{
+        position: "absolute", bottom: -2, right: -2,
+        width: 48, height: 48,
+        borderBottom: "2px solid #22c55e",
+        borderRight: "2px solid #22c55e",
+        borderRadius: "0 0 12px 0",
+        zIndex: 3,
+        pointerEvents: "none",
+      }} />
+
+      {/* Card frame */}
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        style={{
+          position: "relative",
+          zIndex: 1,
+          borderRadius: 16,
+          overflow: "hidden",
+          background: "#0a0f0a",
+          boxShadow: "0 0 0 1px rgba(34,197,94,0.15), 0 24px 64px -16px rgba(0,0,0,0.7), 0 0 40px -8px rgba(34,197,94,0.12)",
+        }}
+      >
+        {/* Image */}
+        <img
+          src="/profile_shades.jpg"
+          alt="Professional portrait of Cennsei"
+          style={{
+            width: "100%",
+            display: "block",
+            objectFit: "cover",
+            objectPosition: "center top",
+            aspectRatio: "3 / 4",
+            WebkitMaskImage: "linear-gradient(to bottom, #000 0% 72%, transparent 100%)",
+            maskImage: "linear-gradient(to bottom, #000 0% 72%, transparent 100%)",
+          }}
+        />
+
+        {/* Subtle inner top highlight */}
+        <div aria-hidden="true" style={{
+          position: "absolute", top: 0, left: 0, right: 0,
+          height: 120,
+          background: "linear-gradient(to bottom, rgba(34,197,94,0.06) 0%, transparent 100%)",
+          pointerEvents: "none",
+        }} />
+      </motion.div>
+
+      {/* Floating status badge */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        style={{
+          position: "absolute",
+          bottom: 28,
+          left: -16,
+          zIndex: 4,
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          background: "rgba(10,15,10,0.85)",
+          backdropFilter: "blur(16px)",
+          border: "1px solid rgba(34,197,94,0.25)",
+          borderRadius: 999,
+          padding: "8px 16px 8px 10px",
+          boxShadow: "0 8px 24px -6px rgba(0,0,0,0.5)",
+        }}
+      >
+        {/* Pulsing green dot */}
+        <span style={{ position: "relative", width: 10, height: 10, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+          <motion.span
+            animate={{ scale: [1, 1.8, 1], opacity: [0.6, 0, 0.6] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+            style={{
+              position: "absolute",
+              width: 10, height: 10,
+              borderRadius: "50%",
+              background: "rgba(34,197,94,0.4)",
+              display: "block",
+            }}
+          />
+          <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e", display: "block", position: "relative" }} />
+        </span>
+        <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "#e2e2e8", whiteSpace: "nowrap" }}>
+          Open to opportunities
+        </span>
+      </motion.div>
+
+      {/* Floating tech badge — top right */}
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.65, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        style={{
+          position: "absolute",
+          top: 24,
+          right: -14,
+          zIndex: 4,
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          background: "rgba(10,15,10,0.85)",
+          backdropFilter: "blur(16px)",
+          border: "1px solid rgba(34,197,94,0.2)",
+          borderRadius: 10,
+          padding: "8px 12px",
+          boxShadow: "0 8px 24px -6px rgba(0,0,0,0.5)",
+        }}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#22c55e" }}>code</span>
+        <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#f8fafc" }}>CS Student</span>
+      </motion.div>
+
+    </div>
   );
 }
 
@@ -207,18 +294,8 @@ export function AboutPage() {
 
           {/* Portrait */}
           <FadeUp delay={0.12}>
-            <div style={{ position: "relative" }}>
+            <div style={{ padding: "16px 24px" }}>
               <PortraitCard />
-              {/* Background blur blob */}
-              <div style={{
-                position: "absolute", bottom: -24, right: -24,
-                width: 180, height: 180,
-                background: "rgba(34,197,94,0.08)",
-                filter: "blur(50px)",
-                borderRadius: "50%",
-                zIndex: -1,
-                pointerEvents: "none",
-              }} />
             </div>
           </FadeUp>
         </div>
