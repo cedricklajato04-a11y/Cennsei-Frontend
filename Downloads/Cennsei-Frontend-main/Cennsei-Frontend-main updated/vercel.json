@@ -1,5 +1,4 @@
 {
-  "rootDirectory": "Downloads/Cennsei-Frontend-main/Cennsei-Frontend-main updated",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "installCommand": "npm install",
